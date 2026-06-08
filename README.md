@@ -76,7 +76,7 @@ docker compose down
 bundle install
 bundle exec rails db:create db:migrate
 bundle exec rails server
-# Listening on http://localhost:3000
+# Listening on http://localhost:3002
 ```
 
 **Run the test suite:**
