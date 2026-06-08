@@ -7,6 +7,7 @@ A RESTful JSON API for storing and retrieving IP/URL geolocation data, backed by
 - Ruby 3.4.2 / Rails 8.1 (API-only)
 - SQLite3
 - `jsonapi-serializer` (JSON API spec responses)
+- `dotenv-rails` (local env variable loading)
 - RSpec + WebMock + FactoryBot (test suite)
 
 ---
@@ -31,15 +32,16 @@ bundle install
 
 ```bash
 cp .env.example .env
-# edit .env and fill in IPSTACK_API_KEY and API_KEY
 ```
 
-Then export them (or use a tool like `direnv`):
+Open `.env` and fill in your values:
 
 ```bash
-export IPSTACK_API_KEY=your_ipstack_key
-export API_KEY=your_chosen_secret_key
+IPSTACK_API_KEY=your_ipstack_api_key_here
+API_KEY=choose_a_strong_random_secret
 ```
+
+No manual `export` needed — `dotenv-rails` loads `.env` automatically in `development` and `test`.
 
 ### 4. Set up the database
 
