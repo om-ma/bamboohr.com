@@ -52,7 +52,7 @@ docker compose up --build
 That's it. The container will:
 1. Install all gems
 2. Create and migrate the database
-3. Start the server on `http://localhost:3001`
+3. Start the server on `http://localhost:3002`
 
 **Run the test suite inside Docker:**
 
@@ -148,31 +148,31 @@ DELETE /api/v1/geolocations/:ip_or_url
 
 ```bash
 # Store a geolocation by IP
-curl -X POST http://localhost:3001/api/v1/geolocations \
+curl -X POST http://localhost:3002/api/v1/geolocations \
   -H "X-Api-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{"data":{"attributes":{"ip_or_url":"8.8.8.8"}}}'
 
 # Store a geolocation by URL
-curl -X POST http://localhost:3001/api/v1/geolocations \
+curl -X POST http://localhost:3002/api/v1/geolocations \
   -H "X-Api-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{"data":{"attributes":{"ip_or_url":"google.com"}}}'
 
 # Retrieve by IP
-curl http://localhost:3001/api/v1/geolocations/8.8.8.8 \
+curl http://localhost:3002/api/v1/geolocations/8.8.8.8 \
   -H "X-Api-Key: your_api_key"
 
 # Retrieve by URL
-curl http://localhost:3001/api/v1/geolocations/google.com \
+curl http://localhost:3002/api/v1/geolocations/google.com \
   -H "X-Api-Key: your_api_key"
 
 # List all
-curl http://localhost:3001/api/v1/geolocations \
+curl http://localhost:3002/api/v1/geolocations \
   -H "X-Api-Key: your_api_key"
 
 # Delete
-curl -X DELETE http://localhost:3001/api/v1/geolocations/8.8.8.8 \
+curl -X DELETE http://localhost:3002/api/v1/geolocations/8.8.8.8 \
   -H "X-Api-Key: your_api_key"
 ```
 
