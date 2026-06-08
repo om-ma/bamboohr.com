@@ -64,6 +64,27 @@ bundle exec rspec
 
 ---
 
+## Running with Docker Compose
+
+The fastest way to get the API running locally without installing Ruby:
+
+```bash
+cp .env.example .env
+# fill in IPSTACK_API_KEY and API_KEY in .env
+
+docker compose up --build
+```
+
+The container will run `db:migrate` automatically on first boot. API is available at `http://localhost:3000`.
+
+To run tests inside the container:
+
+```bash
+docker compose run --rm api bundle exec rspec
+```
+
+---
+
 ## Authentication
 
 All endpoints require the header:
