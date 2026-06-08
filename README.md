@@ -12,23 +12,21 @@ A RESTful JSON API for storing and retrieving IP/URL geolocation data, backed by
 
 ---
 
-## Quick Start
+## Getting Started
 
-### 1. Prerequisites
+### Prerequisites
 
-- Ruby 3.4.2 (via RVM: `rvm use 3.4.2`)
-- Bundler: `gem install bundler`
 - An [ipstack.com](https://ipstack.com) API key (free tier works)
+- **Docker** — or Ruby 3.4.2 + Bundler if running locally without Docker
 
-### 2. Clone & install
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/om-ma/bamboohr.com.git
 cd bamboohr.com
-bundle install
 ```
 
-### 3. Configure environment
+### 2. Configure environment
 
 ```bash
 cp .env.example .env
@@ -41,46 +39,50 @@ IPSTACK_API_KEY=your_ipstack_api_key_here
 API_KEY=choose_a_strong_random_secret
 ```
 
-No manual `export` needed — `dotenv-rails` loads `.env` automatically in `development` and `test`.
+---
 
-### 4. Set up the database
+## Option A — Run with Docker Compose (recommended)
+
+No Ruby installation required.
 
 ```bash
-bundle exec rails db:create db:migrate
+docker compose up --build
 ```
 
-### 5. Start the server
+That's it. The container will:
+1. Install all gems
+2. Create and migrate the database
+3. Start the server on `http://localhost:3000`
+
+**Run the test suite inside Docker:**
 
 ```bash
-bundle exec rails server
-# Listening on http://localhost:3000
+docker compose run --rm api bundle exec rspec
 ```
 
-### 6. Run the test suite
+**Stop the server:**
 
 ```bash
-bundle exec rspec
+docker compose down
 ```
 
 ---
 
-## Running with Docker Compose
+## Option B — Run locally with Ruby
 
-The fastest way to get the API running locally without installing Ruby:
+**Prerequisites:** Ruby 3.4.2 (e.g. via RVM: `rvm use 3.4.2`) and Bundler.
 
 ```bash
-cp .env.example .env
-# fill in IPSTACK_API_KEY and API_KEY in .env
-
-docker compose up --build
+bundle install
+bundle exec rails db:create db:migrate
+bundle exec rails server
+# Listening on http://localhost:3000
 ```
 
-The container will run `db:migrate` automatically on first boot. API is available at `http://localhost:3000`.
-
-To run tests inside the container:
+**Run the test suite:**
 
 ```bash
-docker compose run --rm api bundle exec rspec
+bundle exec rspec
 ```
 
 ---
@@ -119,7 +121,7 @@ GET /api/v1/geolocations/google.com
 
 ### Add geolocation
 
-Fetches data from ipstack and stores it.
+Fetches data from ipstack and stores it. Accepts an IP address or a hostname/URL — if a URL is given it is resolved to an IP first.
 
 ```
 POST /api/v1/geolocations
@@ -134,8 +136,6 @@ Content-Type: application/json
 }
 ```
 
-Accepts an IP address or a hostname/URL. If a URL is provided it is resolved to an IP.
-
 ### Delete geolocation
 
 ```
@@ -147,23 +147,33 @@ DELETE /api/v1/geolocations/:ip_or_url
 ## Example session
 
 ```bash
-# Store a geolocation
+# Store a geolocation by IP
 curl -X POST http://localhost:3000/api/v1/geolocations \
-  -H "X-Api-Key: secret" \
+  -H "X-Api-Key: your_api_key" \
   -H "Content-Type: application/json" \
   -d '{"data":{"attributes":{"ip_or_url":"8.8.8.8"}}}'
 
-# Retrieve it by IP
+# Store a geolocation by URL
+curl -X POST http://localhost:3000/api/v1/geolocations \
+  -H "X-Api-Key: your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"data":{"attributes":{"ip_or_url":"google.com"}}}'
+
+# Retrieve by IP
 curl http://localhost:3000/api/v1/geolocations/8.8.8.8 \
-  -H "X-Api-Key: secret"
+  -H "X-Api-Key: your_api_key"
 
-# Retrieve it by URL
-curl http://localhost:3000/api/v1/geolocations/dns.google \
-  -H "X-Api-Key: secret"
+# Retrieve by URL
+curl http://localhost:3000/api/v1/geolocations/google.com \
+  -H "X-Api-Key: your_api_key"
 
-# Delete it
+# List all
+curl http://localhost:3000/api/v1/geolocations \
+  -H "X-Api-Key: your_api_key"
+
+# Delete
 curl -X DELETE http://localhost:3000/api/v1/geolocations/8.8.8.8 \
-  -H "X-Api-Key: secret"
+  -H "X-Api-Key: your_api_key"
 ```
 
 ---
@@ -213,7 +223,7 @@ Error responses use the JSON API errors format:
 
 ## Swapping the geolocation provider
 
-The provider is injected via `GeolocationService`:
+The provider is injected into `GeolocationService`:
 
 ```ruby
 GeolocationService.new(provider: MyOtherProvider.new)
